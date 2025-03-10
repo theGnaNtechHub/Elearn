@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-Learning Dashboard</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./script.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to Your Dashboard</h1>
+
+      <div class="tabs">
+        <button class="tab-button" data-tab="courses">Courses</button>
+        <button class="tab-button" data-tab="progress">Progress</button>
+        <button class="tab-button" data-tab="community">Community</button>
+        <button class="tab-button" data-tab="editor">Code Editor</button>
+        <button class="tab-button" data-tab="flowchart">Flowchart</button>
+      </div>
+
+      <div class="tab-content" id="courses">
+        <h2>Enrolled Courses</h2>
+        <p>Explore your active courses and continue learning.</p>
+        <button class="action-button">View Courses</button>
+      </div>
+
+      <div class="tab-content" id="progress">
+        <h2>Learning Progress</h2>
+        <p>Track your achievements and milestones.</p>
+        <progress value="70" max="100"></progress>
+        <span class="badge">Intermediate Level</span>
+      </div>
+
+      <div class="tab-content" id="community">
+        <h2>Discussion Forums</h2>
+        <p>Engage with fellow learners and experts.</p>
+        <button class="action-button">Join Community</button>
+      </div>
+
+      <div class="tab-content" id="editor">
+        <h2>Pseudo-Code Editor</h2>
+        <p>Write, validate, and execute pseudo-code in real-time.</p>
+        <textarea
+          id="pseudo-code"
+          placeholder="Write your pseudo-code here..."
+        ></textarea>
+        <button class="action-button" onclick="validateCode()">Run Code</button>
+      </div>
+
+      <div class="tab-content" id="flowchart">
+        <h2>Flowchart Evaluator</h2>
+        <p>Build and validate flowcharts interactively.</p>
+        <div id="flowchart-area"></div>
+        <button class="action-button" onclick="validateFlowchart()">
+          Validate Flowchart
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
