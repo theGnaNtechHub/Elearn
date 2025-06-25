@@ -1,0 +1,6 @@
+[submodule "apps/PseudoCodeEditor"]
+	path = apps/PseudoCodeEditor
+	url = https://github.com/theGnaNtechHub/PseudoCodeEditor
+[submodule "apps/FlowChartEvaluator"]
+	path = apps/FlowChartEvaluator
+	url = https://github.com/theGnaNtechHub/FlowChartEvaluator
