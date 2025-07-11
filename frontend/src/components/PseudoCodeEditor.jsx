@@ -25,9 +25,22 @@ const PseudoCodeEditor = () => {
     monaco.editor.setTheme("vteach-dark");
   };
 
-  const handleRun = () => {
-    // You’ll later connect to backend here
-    setOutput("Output will appear here...");
+  const handleRun = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/evaluate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      const result = await response.json();
+      setOutput(result.output || "No output returned.");
+    } catch (error) {
+      console.error("Error while fetching output:", error);
+      setOutput("❌ Error connecting to server. Please try again.");
+    }
   };
 
   return (
