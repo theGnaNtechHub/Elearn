@@ -15,13 +15,10 @@ else
 endif`);
   const [output, setOutput] = useState("");
   const [variables, setVariables] = useState({});
-  const [executionSteps, setExecutionSteps] = useState([]);
   const [syntaxHints, setSyntaxHints] = useState([]);
   const [learningSuggestions, setLearningSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [executionMode, setExecutionMode] = useState("normal"); // "normal" or "step-by-step"
-  const [currentStep, setCurrentStep] = useState(0);
 
   const handleEditorDidMount = (editor, monaco) => {
     monaco.editor.defineTheme("vteach-dark", {
@@ -95,32 +92,19 @@ endif`);
     setError("");
     setOutput("");
     setVariables({});
-    setExecutionSteps([]);
-    setCurrentStep(0);
 
     try {
       const response = await fetch("http://localhost:5001/evaluate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code,
-          step_by_step: executionMode === "step-by-step",
-        }),
+        body: JSON.stringify({ code }),
       });
 
       const result = await response.json();
 
       if (result.status === "success") {
-        if (executionMode === "step-by-step" && result.execution_steps) {
-          setExecutionSteps(result.execution_steps);
-          setVariables(result.final_variables || {});
-          setOutput(
-            "Step-by-step execution completed. Use the step controls below."
-          );
-        } else {
-          setOutput(result.output || "No output returned.");
-          setVariables(result.variables || {});
-        }
+        setOutput(result.output || "No output returned.");
+        setVariables(result.variables || {});
       } else {
         setError(result.message || "An error occurred during execution.");
         if (result.errors) {
@@ -144,28 +128,7 @@ endif`);
     }
   };
 
-  const handleStepForward = () => {
-    if (currentStep < executionSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
 
-  const handleStepBackward = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleReset = () => {
-    setCurrentStep(0);
-  };
-
-  const getCurrentStepData = () => {
-    if (executionSteps.length === 0) return null;
-    return executionSteps[currentStep];
-  };
-
-  const currentStepData = getCurrentStepData();
 
   return (
     <>
@@ -213,21 +176,6 @@ endif`);
             >
               {isLoading ? "⏳ Running..." : "▶ Run"}
             </button>
-
-            <select
-              value={executionMode}
-              onChange={(e) => setExecutionMode(e.target.value)}
-              style={{
-                padding: "6px 12px",
-                borderRadius: "4px",
-                border: "1px solid #64748B",
-                backgroundColor: "#1E293B",
-                color: "white",
-              }}
-            >
-              <option value="normal">Normal Execution</option>
-              <option value="step-by-step">Step-by-Step</option>
-            </select>
           </div>
 
           <Editor
@@ -278,95 +226,7 @@ endif`);
             </pre>
           </div>
 
-          {/* Step-by-Step Controls */}
-          {executionMode === "step-by-step" && executionSteps.length > 0 && (
-            <div
-              style={{
-                padding: "10px",
-                backgroundColor: "#1E293B",
-                borderTop: "1px solid #374151",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  gap: "10px",
-                  alignItems: "center",
-                  marginBottom: "10px",
-                }}
-              >
-                <button
-                  onClick={handleStepBackward}
-                  disabled={currentStep === 0}
-                  style={{
-                    padding: "4px 8px",
-                    backgroundColor: currentStep === 0 ? "#64748B" : "#3B82F6",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: currentStep === 0 ? "not-allowed" : "pointer",
-                  }}
-                >
-                  ⏮ Previous
-                </button>
-                <span style={{ color: "white" }}>
-                  Step {currentStep + 1} of {executionSteps.length}
-                </span>
-                <button
-                  onClick={handleStepForward}
-                  disabled={currentStep === executionSteps.length - 1}
-                  style={{
-                    padding: "4px 8px",
-                    backgroundColor:
-                      currentStep === executionSteps.length - 1
-                        ? "#64748B"
-                        : "#3B82F6",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor:
-                      currentStep === executionSteps.length - 1
-                        ? "not-allowed"
-                        : "pointer",
-                  }}
-                >
-                  Next ⏭
-                </button>
-                <button
-                  onClick={handleReset}
-                  style={{
-                    padding: "4px 8px",
-                    backgroundColor: "#F59E0B",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
-                >
-                  🔄 Reset
-                </button>
-              </div>
 
-              {currentStepData && (
-                <div style={{ fontSize: "12px", color: "#9CA3AF" }}>
-                  <div>
-                    <strong>Line {currentStepData.line_number}:</strong>{" "}
-                    {currentStepData.code}
-                  </div>
-                  {currentStepData.output && (
-                    <div>
-                      <strong>Output:</strong> {currentStepData.output}
-                    </div>
-                  )}
-                  {currentStepData.error && (
-                    <div style={{ color: "#EF4444" }}>
-                      <strong>Error:</strong> {currentStepData.error}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Variables Section */}
           {Object.keys(variables).length > 0 && (
