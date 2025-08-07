@@ -1,8 +1,25 @@
 import React, { useState, useEffect } from "react";
-import Editor from "@monaco-editor/react";
+import Editor, { OnMount } from "@monaco-editor/react";
 
-const PseudoCodeEditor = () => {
-  const [code, setCode] = useState(`// Welcome to VteacH Pseudo-code Editor!
+type SyntaxHint = {
+  line: number;
+  message: string;
+  suggestion?: string;
+};
+
+type LearningSuggestion = string;
+
+type EvaluationResult = {
+  status: "success" | "error";
+  output?: string;
+  variables?: Record<string, string | number | boolean>;
+  message?: string;
+  errors?: { line: number; message: string }[];
+};
+
+const PseudoCodeEditor: React.FC = () => {
+  const [code, setCode] =
+    useState<string>(`// Welcome to VteacH Pseudo-code Editor!
 // Write your pseudo-code here and click Run to execute it.
 
 // Example:
@@ -13,14 +30,19 @@ if x < y then
 else
     print "x is greater than or equal to y"
 endif`);
-  const [output, setOutput] = useState("");
-  const [variables, setVariables] = useState({});
-  const [syntaxHints, setSyntaxHints] = useState([]);
-  const [learningSuggestions, setLearningSuggestions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleEditorDidMount = (editor, monaco) => {
+  const [output, setOutput] = useState<string>("");
+  const [variables, setVariables] = useState<
+    Record<string, string | number | boolean>
+  >({});
+  const [syntaxHints, setSyntaxHints] = useState<SyntaxHint[]>([]);
+  const [learningSuggestions, setLearningSuggestions] = useState<
+    LearningSuggestion[]
+  >([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  const handleEditorDidMount: OnMount = (editor, monaco) => {
     monaco.editor.defineTheme("vteach-dark", {
       base: "vs-dark",
       inherit: true,
@@ -41,7 +63,6 @@ endif`);
     monaco.editor.setTheme("vteach-dark");
   };
 
-  // Check syntax hints when code changes
   useEffect(() => {
     const checkSyntax = async () => {
       if (!code.trim()) {
@@ -51,7 +72,6 @@ endif`);
       }
 
       try {
-        // Get syntax hints
         const hintsResponse = await fetch(
           "http://localhost:5001/syntax-hints",
           {
@@ -60,12 +80,13 @@ endif`);
             body: JSON.stringify({ code }),
           }
         );
-        const hintsData = await hintsResponse.json();
+
+        const hintsData: { status: string; hints: SyntaxHint[] } =
+          await hintsResponse.json();
         if (hintsData.status === "success") {
           setSyntaxHints(hintsData.hints);
         }
 
-        // Get learning suggestions
         const suggestionsResponse = await fetch(
           "http://localhost:5001/learning-suggestions",
           {
@@ -74,7 +95,11 @@ endif`);
             body: JSON.stringify({ code }),
           }
         );
-        const suggestionsData = await suggestionsResponse.json();
+
+        const suggestionsData: {
+          status: string;
+          suggestions: LearningSuggestion[];
+        } = await suggestionsResponse.json();
         if (suggestionsData.status === "success") {
           setLearningSuggestions(suggestionsData.suggestions);
         }
@@ -100,7 +125,7 @@ endif`);
         body: JSON.stringify({ code }),
       });
 
-      const result = await response.json();
+      const result: EvaluationResult = await response.json();
 
       if (result.status === "success") {
         setOutput(result.output || "No output returned.");
@@ -128,29 +153,33 @@ endif`);
     }
   };
 
-
-
   return (
     <>
-      <h1
+      <br></br>
+      <div></div>
+      <div
         style={{
           textAlign: "center",
-          backgroundColor: "#FFFFFF",
-          fontFamily: "sans-serif",
-          fontSize: "28px",
-          fontWeight: "bold",
-          color: "#3375D7FF",
-          margin: "0",
-          padding: "16px 0",
+          marginTop: "-8px",
+          marginBottom: "20px",
+          position: "sticky",
         }}
       >
-        VteacH – PseudoCodeEditor
-      </h1>
+        <b>
+          <h2 style={{ fontSize: "32px", color: "#02388A", margin: "0" }}>
+            MR PSEUDO –{" "}
+            <span style={{ fontWeight: "1500" }}>The Pseudo Code Editor</span>
+          </h2>
+        </b>
+        <p style={{ color: "#6B7280", fontSize: "18px", marginTop: "4px" }}>
+          Write, validate, and improve your logic with real-time feedback
+        </p>
+      </div>
 
       <div
         style={{ display: "flex", height: "calc(100vh - 80px)", width: "100%" }}
       >
-        {/* Left - Code Editor Panel */}
+        {/* Left Panel - Editor */}
         <div style={{ width: "50%", display: "flex", flexDirection: "column" }}>
           <div
             style={{
@@ -174,7 +203,7 @@ endif`);
                 fontWeight: "bold",
               }}
             >
-              {isLoading ? "⏳ Running..." : "▶ Run"}
+              {isLoading ? "⏳ Running..." : "▷ Run"}
             </button>
           </div>
 
@@ -194,7 +223,7 @@ endif`);
           />
         </div>
 
-        {/* Right - Output and Info Panel */}
+        {/* Right Panel - Output and Information */}
         <div style={{ width: "50%", display: "flex", flexDirection: "column" }}>
           {/* Output Section */}
           <div
@@ -226,8 +255,6 @@ endif`);
             </pre>
           </div>
 
-
-
           {/* Variables Section */}
           {Object.keys(variables).length > 0 && (
             <div
@@ -244,14 +271,14 @@ endif`);
                 {Object.entries(variables).map(([key, value]) => (
                   <div key={key}>
                     <strong>{key}:</strong>{" "}
-                    {typeof value === "string" ? `"${value}"` : String(value)}
+                    {typeof value === "string" ? value : String(value)}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Syntax Hints */}
+          {/* Syntax Hints Section */}
           {syntaxHints.length > 0 && (
             <div
               style={{
@@ -278,7 +305,7 @@ endif`);
             </div>
           )}
 
-          {/* Learning Suggestions */}
+          {/* Learning Suggestions Section */}
           {learningSuggestions.length > 0 && (
             <div
               style={{
