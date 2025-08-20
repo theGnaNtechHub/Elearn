@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Genie - VteacH Assistant</title>
+  </head>
+  <body style="font-family: Arial; padding: 20px">
+    <h1>🧞 Genie – Your AI Assistant</h1>
+    <form id="genieForm">
+      <textarea
+        name="query"
+        placeholder="Ask Genie anything..."
+        rows="5"
+        cols="60"
+        required
+      ></textarea
+      ><br /><br />
+      <button type="submit">Ask Genie</button>
+    </form>
+
+    <div
+      id="genieResponse"
+      style="
+        margin-top: 30px;
+        background: #f4f4f4;
+        padding: 20px;
+        border-radius: 10px;
+      "
+    ></div>
+
+    <script>
+      document
+        .getElementById("genieForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+
+          fetch("/", {
+            method: "POST",
+            body: formData,
+          })
+            .then((res) => res.text())
+            .then((data) => {
+              document.getElementById("genieResponse").innerHTML = data;
+            })
+            .catch((err) => {
+              document.getElementById("genieResponse").innerHTML =
+                "<p style='color:red;'>An error occurred.</p>";
+            });
+        });
+    </script>
+  </body>
+</html>

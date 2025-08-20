@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* theGnaN VteacH Design System - Educational Platform
+Primary: #02388A (blue), Accent: #FD7934 (orange), Neutrals: white, light gray
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Platform Colors */
+    --background: 0 0% 100%;
+    --foreground: 218 95% 27%; /* #02388A */
+
+    --card: 0 0% 100%;
+    --card-foreground: 218 95% 27%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 218 95% 27%;
+
+    /* Primary: #02388A */
+    --primary: 218 95% 27%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Accent: #FD7934 */
+    --accent: 20 97% 59%;
+    --accent-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 218 95% 27%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 218 95% 27%;
+
+    /* Custom Platform Tokens */
+    --platform-blue: 218 95% 27%; /* #02388A */
+    --platform-orange: 20 97% 59%; /* #FD7934 */
+    --platform-orange-light: 20 100% 95%; /* #FFEDD5 for MR PSEUDO */
+    --platform-blue-light: 214 100% 92%; /* #DBEAFE for LADY LOGIC */
+    --platform-gray: 210 20% 96%;
+    --platform-gray-dark: 215 16% 47%;
+
+    /* Shadows & Effects */
+    --shadow-soft: 0 2px 8px hsl(218 95% 27% / 0.1);
+    --shadow-glow: 0 0 20px hsl(var(--platform-orange) / 0.3);
+    --shadow-card: 0 4px 12px hsl(218 95% 27% / 0.08);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer components {
+  /* Platform Component Styles */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 hover:shadow-md;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-accent-foreground hover:bg-accent/90 px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 hover:shadow-md;
+  }
+
+  .card-elevated {
+    @apply bg-card rounded-xl shadow-sm border border-border p-6 hover:shadow-lg transition-all duration-300;
+  }
+
+  .platform-topbar {
+    @apply h-[60px] bg-background border-b border-border shadow-sm fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6;
+  }
+
+  .nav-link {
+    @apply text-foreground hover:text-accent font-medium transition-colors duration-200 relative;
+  }
+
+  .nav-link:hover::after {
+    @apply content-[''] absolute -bottom-1 left-0 w-full h-0.5 bg-accent;
+  }
+
+  .icon-hover {
+    @apply transition-transform duration-200 hover:scale-110 hover:shadow-glow cursor-pointer;
+  }
+
+  .fade-in {
+    @apply animate-in fade-in-0 duration-500;
+  }
+
+  .slide-in-right {
+    @apply animate-in slide-in-from-right-10 duration-300;
+  }
+
+  .slide-in-left {
+    @apply animate-in slide-in-from-left-10 duration-300;
+  }
+
+  .scale-in {
+    @apply animate-in zoom-in-95 duration-200;
+  }
+
+  .glow-effect {
+    @apply shadow-glow;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-muted rounded-lg;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-accent rounded-lg hover:bg-accent/80;
+  }
+}
