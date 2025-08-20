@@ -2,7 +2,16 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Trophy, FlaskConical, Zap, MessageSquare, BookOpen, Bell, ExternalLink } from "lucide-react";
+import {
+  Calendar,
+  Trophy,
+  FlaskConical,
+  Zap,
+  MessageSquare,
+  BookOpen,
+  Bell,
+  ExternalLink,
+} from "lucide-react";
 import CalendarModal from "@/components/features/CalendarModal";
 import { getCurrentUser } from "@/utils/userAuth";
 import { getUserCourses } from "@/utils/courseManager";
@@ -33,8 +42,12 @@ const Dashboard = () => {
       <div className="container mx-auto px-6 py-8">
         {/* Hero Banner */}
         <div className="bg-gradient-to-r from-primary to-primary/80 rounded-xl p-8 text-white mb-8 fade-in">
-          <h1 className="text-3xl font-bold mb-2">Welcome back, {currentUser?.name || 'Innovator'}!</h1>
-          <p className="text-lg opacity-90">Let's unlock new skills and continue your learning journey.</p>
+          <h1 className="text-3xl font-bold mb-2">
+            Welcome back, {currentUser?.name || "Innovator"}!
+          </h1>
+          <p className="text-lg opacity-90">
+            Let's unlock new skills and continue your learning journey.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -55,21 +68,32 @@ const Dashboard = () => {
                 {enrolledCourses.length > 0 ? (
                   <div className="space-y-4">
                     {enrolledCourses.slice(0, 3).map((course) => (
-                      <div key={course.id} className="p-4 bg-platform-gray/30 rounded-lg">
+                      <div
+                        key={course.id}
+                        className="p-4 bg-platform-gray/30 rounded-lg"
+                      >
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-primary">{course.title}</h4>
-                          <span className="text-sm text-platform-gray-dark">{course.progress}%</span>
+                          <h4 className="font-semibold text-primary">
+                            {course.title}
+                          </h4>
+                          <span className="text-sm text-platform-gray-dark">
+                            {course.progress}%
+                          </span>
                         </div>
                         <div className="w-full bg-platform-gray rounded-full h-2 mb-3">
-                          <div 
-                            className="bg-accent h-2 rounded-full transition-all" 
+                          <div
+                            className="bg-accent h-2 rounded-full transition-all"
                             style={{ width: `${course.progress}%` }}
                           ></div>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-platform-gray-dark">Level: {course.level}</span>
-                          <Link to={`/course/${course.id}`}>
-                            <Button variant="outline" size="sm">Continue</Button>
+                          <span className="text-sm text-platform-gray-dark">
+                            Level: {course.level}
+                          </span>
+                          <Link to={`/courses/${course.id}`}>
+                            <Button variant="outline" size="sm">
+                              Continue
+                            </Button>
                           </Link>
                         </div>
                       </div>
@@ -110,8 +134,12 @@ const Dashboard = () => {
                         <div className="w-12 h-12 bg-platform-orange-light rounded-lg flex items-center justify-center mx-auto mb-3">
                           <span className="text-2xl">👨‍💻</span>
                         </div>
-                        <h3 className="font-semibold text-primary mb-1">MR PSEUDO</h3>
-                        <p className="text-sm text-platform-gray-dark">Code Editor</p>
+                        <h3 className="font-semibold text-primary mb-1">
+                          MR PSEUDO
+                        </h3>
+                        <p className="text-sm text-platform-gray-dark">
+                          Code Editor
+                        </p>
                       </CardContent>
                     </Card>
                   </Link>
@@ -121,8 +149,12 @@ const Dashboard = () => {
                         <div className="w-12 h-12 bg-platform-blue-light rounded-lg flex items-center justify-center mx-auto mb-3">
                           <span className="text-2xl">🔀</span>
                         </div>
-                        <h3 className="font-semibold text-primary mb-1">LADY LOGIC</h3>
-                        <p className="text-sm text-platform-gray-dark">Flowchart Tool</p>
+                        <h3 className="font-semibold text-primary mb-1">
+                          LADY LOGIC
+                        </h3>
+                        <p className="text-sm text-platform-gray-dark">
+                          Flowchart Tool
+                        </p>
                       </CardContent>
                     </Card>
                   </Link>
@@ -135,7 +167,9 @@ const Dashboard = () => {
           <div className="lg:col-span-1">
             <Card className="card-elevated sticky top-24">
               <CardHeader>
-                <CardTitle className="text-primary text-lg">Quick Access</CardTitle>
+                <CardTitle className="text-primary text-lg">
+                  Quick Access
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {sidebarItems.map((item, index) => (

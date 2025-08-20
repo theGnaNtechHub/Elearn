@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Editor, { OnMount } from "@monaco-editor/react";
 
 type SyntaxHint = {
@@ -29,7 +29,8 @@ if x < y then
     print "x is less than y"
 else
     print "x is greater than or equal to y"
-endif`);
+endif
+`);
 
   const [output, setOutput] = useState<string>("");
   const [variables, setVariables] = useState<
@@ -71,8 +72,36 @@ endif`);
         return;
       }
 
+      // Implement exponential backoff for API calls
+      const fetchWithRetry = async (
+        url: string,
+        options: RequestInit,
+        retries = 3,
+        delay = 1000
+      ) => {
+        try {
+          const response = await fetch(url, options);
+          if (!response.ok) {
+            if (response.status === 429 && retries > 0) {
+              // Too Many Requests
+              await new Promise((res) => setTimeout(res, delay));
+              return fetchWithRetry(url, options, retries - 1, delay * 2);
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response;
+        } catch (error) {
+          if (retries > 0) {
+            await new Promise((res) => setTimeout(res, delay));
+            return fetchWithRetry(url, options, retries - 1, delay * 2);
+          }
+          throw error;
+        }
+      };
+
       try {
-        const hintsResponse = await fetch(
+        // Fetch syntax hints
+        const hintsResponse = await fetchWithRetry(
           "http://localhost:5001/syntax-hints",
           {
             method: "POST",
@@ -87,7 +116,8 @@ endif`);
           setSyntaxHints(hintsData.hints);
         }
 
-        const suggestionsResponse = await fetch(
+        // Fetch learning suggestions
+        const suggestionsResponse = await fetchWithRetry(
           "http://localhost:5001/learning-suggestions",
           {
             method: "POST",
@@ -118,8 +148,35 @@ endif`);
     setOutput("");
     setVariables({});
 
+    // Implement exponential backoff for API calls
+    const fetchWithRetry = async (
+      url: string,
+      options: RequestInit,
+      retries = 3,
+      delay = 1000
+    ) => {
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+          if (response.status === 429 && retries > 0) {
+            // Too Many Requests
+            await new Promise((res) => setTimeout(res, delay));
+            return fetchWithRetry(url, options, retries - 1, delay * 2);
+          }
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response;
+      } catch (error) {
+        if (retries > 0) {
+          await new Promise((res) => setTimeout(res, delay));
+          return fetchWithRetry(url, options, retries - 1, delay * 2);
+        }
+        throw error;
+      }
+    };
+
     try {
-      const response = await fetch("http://localhost:5001/evaluate", {
+      const response = await fetchWithRetry("http://localhost:5001/evaluate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
@@ -154,15 +211,24 @@ endif`);
   };
 
   return (
-    <>
-      <br></br>
-      <div></div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "90vh",
+        padding: "0 20px 20px 20px",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Header Section */}
       <div
         style={{
           textAlign: "center",
-          marginTop: "-8px",
           marginBottom: "20px",
-          position: "sticky",
+          padding: "10px",
+          backgroundColor: "#F8FAFC",
+          zIndex: "10",
+          borderRadius: "8px",
         }}
       >
         <b>
@@ -176,11 +242,29 @@ endif`);
         </p>
       </div>
 
+      {/* Main Editor and Info Panels Container */}
       <div
-        style={{ display: "flex", height: "calc(100vh - 80px)", width: "100%" }}
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          gap: "20px",
+          flex: "1",
+          overflow: "hidden",
+        }}
       >
-        {/* Left Panel - Editor */}
-        <div style={{ width: "50%", display: "flex", flexDirection: "column" }}>
+        {/* Left Panel - Editor Section */}
+        <div
+          style={{
+            width: "50%",
+            display: "flex",
+            flexDirection: "column",
+            flex: "1",
+            borderRadius: "8px",
+            overflow: "hidden",
+          }}
+        >
+          {/* Run Button Section */}
           <div
             style={{
               padding: "10px",
@@ -201,30 +285,44 @@ endif`);
                 borderRadius: "6px",
                 cursor: isLoading ? "not-allowed" : "pointer",
                 fontWeight: "bold",
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                transition: "background-color 0.3s ease",
               }}
             >
               {isLoading ? "⏳ Running..." : "▷ Run"}
             </button>
           </div>
 
-          <Editor
-            height="100%"
-            language="plaintext"
-            value={code}
-            theme="vteach-dark"
-            onChange={(value) => setCode(value || "")}
-            onMount={handleEditorDidMount}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              lineNumbers: "on",
-              scrollBeyondLastLine: false,
-            }}
-          />
+          {/* Monaco Editor */}
+          <div style={{ flex: "1", height: "100%" }}>
+            <Editor
+              height="100%"
+              language="plaintext"
+              value={code}
+              theme="vteach-dark"
+              onChange={(value) => setCode(value || "")}
+              onMount={handleEditorDidMount}
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+                lineNumbers: "on",
+                scrollBeyondLastLine: false,
+              }}
+            />
+          </div>
         </div>
 
-        {/* Right Panel - Output and Information */}
-        <div style={{ width: "50%", display: "flex", flexDirection: "column" }}>
+        {/* Right Panel - Output and Information Section */}
+        <div
+          style={{
+            width: "50%",
+            display: "flex",
+            flexDirection: "column",
+            flex: "1",
+            borderRadius: "8px",
+            overflow: "hidden",
+          }}
+        >
           {/* Output Section */}
           <div
             style={{
@@ -234,6 +332,7 @@ endif`);
               padding: "20px",
               fontFamily: "monospace",
               overflowY: "auto",
+              borderRadius: "8px 8px 0 0",
             }}
           >
             <h3 style={{ color: "#FD7934", marginTop: 0 }}>Output</h3>
@@ -262,6 +361,7 @@ endif`);
                 padding: "10px",
                 backgroundColor: "#1E293B",
                 borderTop: "1px solid #374151",
+                overflowY: "auto",
               }}
             >
               <h4 style={{ color: "#FD7934", margin: "0 0 10px 0" }}>
@@ -285,6 +385,7 @@ endif`);
                 padding: "10px",
                 backgroundColor: "#1E293B",
                 borderTop: "1px solid #374151",
+                overflowY: "auto",
               }}
             >
               <h4 style={{ color: "#F59E0B", margin: "0 0 10px 0" }}>
@@ -312,6 +413,8 @@ endif`);
                 padding: "10px",
                 backgroundColor: "#1E293B",
                 borderTop: "1px solid #374151",
+                overflowY: "auto",
+                borderRadius: "0 0 8px 8px",
               }}
             >
               <h4 style={{ color: "#10B981", margin: "0 0 10px 0" }}>
@@ -328,7 +431,7 @@ endif`);
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
